@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database.session import Base, engine, SessionLocal
+from app.core.security import hash_password
 from app.models import AuditLog, Scan, ScanResult, ScanTag, User
 from app.routers import admin, auth, scans, services, stats
 from app.utils.logger import logger
@@ -21,23 +22,29 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
 
-    # Auto-seed initial admin & guest users if not present
+    # Auto-seed initial admin & guest users if not present or update password hash
     try:
         from app.services.user_service import UserService
         db = SessionLocal()
 
-        # Seed Admin
+        # Seed/Update Admin
         try:
-            UserService.get_user_by_email(db, "admin@example.com")
+            admin_user = UserService.get_user_by_email(db, "admin@example.com")
+            admin_user.password_hash = hash_password("admin123")
+            db.commit()
+            logger.info("Updated admin user password: admin@example.com")
         except Exception:
-            UserService.create_user(db, "admin@example.com", "admin123", "admin", "admin")
+            UserService.create_user(db, username="admin", email="admin@example.com", password="admin123")
             logger.info("Auto-seeded admin user: admin@example.com")
 
-        # Seed Guest User
+        # Seed/Update Guest User
         try:
-            UserService.get_user_by_email(db, "guest@example.com")
+            guest_user = UserService.get_user_by_email(db, "guest@example.com")
+            guest_user.password_hash = hash_password("guest12345")
+            db.commit()
+            logger.info("Updated guest user password: guest@example.com")
         except Exception:
-            UserService.create_user(db, "guest@example.com", "guest12345", "guest", "user")
+            UserService.create_user(db, username="guest", email="guest@example.com", password="guest12345")
             logger.info("Auto-seeded guest user: guest@example.com")
 
         db.close()
