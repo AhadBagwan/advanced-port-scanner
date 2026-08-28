@@ -1,7 +1,9 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 
 const getBaseUrl = () => {
-  let envUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+  let envUrl =
+    import.meta.env.VITE_API_BASE_URL ||
+    'https://cyber-radar-port-scanner.onrender.com/api'
   if (envUrl.endsWith('/')) {
     envUrl = envUrl.slice(0, -1)
   }
