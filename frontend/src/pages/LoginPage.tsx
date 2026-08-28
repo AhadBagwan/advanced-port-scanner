@@ -32,7 +32,8 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const setUser = useAuthStore((state) => state.setUser)
-  const setTokens = useAuthStore((state) => state.setTokens)
+  const isDarkMode = useUiStore((state) => state.theme === 'dark')
+
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,27 +49,17 @@ export const LoginPage: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     setError(null)
-
     try {
-      console.log('Attempting login with:', data.email)
       const response = await authService.login(data.email, data.password)
-      
-      console.log('Login response:', response)
       authService.setTokens(response.access_token, response.refresh_token)
-
-      if (!response.user) {
-        throw new Error('Login succeeded but user profile was missing.')
+      if (response.user) {
+        authService.setCurrentUser(response.user)
+        setUser(response.user)
       }
-
-      setUser(response.user)
-      authService.setCurrentUser(response.user)
-      
-      console.log('Login successful, navigating to dashboard')
       navigate('/')
     } catch (err: any) {
       console.error('Login error:', err)
-      const errorMessage = err.response?.data?.detail || err.message || 'Login failed. Please try again.'
-      setError(errorMessage)
+      setError(err.response?.data?.detail || 'Invalid email or password')
     } finally {
       setIsLoading(false)
     }
@@ -77,29 +68,21 @@ export const LoginPage: React.FC = () => {
   const handleGuestLogin = async () => {
     setIsLoading(true)
     setError(null)
-
     try {
-      console.log('Logging in as Guest...')
       const response = await authService.login('guest@example.com', 'guest12345')
       authService.setTokens(response.access_token, response.refresh_token)
-
       if (response.user) {
-        setUser(response.user)
         authService.setCurrentUser(response.user)
+        setUser(response.user)
       }
-
-      console.log('Guest login successful, navigating to dashboard')
       navigate('/')
     } catch (err: any) {
       console.error('Guest login error:', err)
-      const errorMessage = err.response?.data?.detail || err.message || 'Guest login failed. Please try again.'
-      setError(errorMessage)
+      setError('Failed to sign in as Guest. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
-
-  const isDarkMode = useUiStore((state) => state.theme === 'dark')
 
   return (
     <Box
@@ -107,7 +90,7 @@ export const LoginPage: React.FC = () => {
         minHeight: '100vh',
         background: isDarkMode
           ? `linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%)`
-          : `linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 50%, #bae6fd 100%)`,
+          : `linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 50%, #cbd5e1 100%)`,
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
@@ -121,41 +104,27 @@ export const LoginPage: React.FC = () => {
           height: '200%',
           top: '-50%',
           left: '-50%',
-          background: `radial-gradient(circle, ${isDarkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(2, 132, 199, 0.1)'} 1px, transparent 1px)`,
+          background: `radial-gradient(circle, ${isDarkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(2, 132, 199, 0.08)'} 1px, transparent 1px)`,
           backgroundSize: '50px 50px',
           animation: 'moveGrid 20s linear infinite',
           pointerEvents: 'none',
           zIndex: 0,
         },
         '@keyframes moveGrid': {
-          '0%': {
-            transform: 'translate(0, 0)',
-          },
-          '100%': {
-            transform: 'translate(50px, 50px)',
-          },
+          '0%': { transform: 'translate(0, 0)' },
+          '100%': { transform: 'translate(50px, 50px)' },
         },
         '@keyframes float': {
-          '0%, 100%': {
-            transform: 'translate(0, 0)',
-            opacity: 0.3,
-          },
-          '50%': {
-            transform: 'translate(20px, -20px)',
-            opacity: 0.6,
-          },
+          '0%, 100%': { transform: 'translate(0, 0)', opacity: 0.3 },
+          '50%': { transform: 'translate(20px, -20px)', opacity: 0.6 },
         },
         '@keyframes glow': {
-          '0%, 100%': {
-            boxShadow: '0 0 20px rgba(102, 126, 234, 0.3)',
-          },
-          '50%': {
-            boxShadow: '0 0 40px rgba(102, 126, 234, 0.6)',
-          },
+          '0%, 100%': { boxShadow: isDarkMode ? '0 0 20px rgba(102, 126, 234, 0.3)' : '0 8px 30px rgba(0, 0, 0, 0.08)' },
+          '50%': { boxShadow: isDarkMode ? '0 0 40px rgba(102, 126, 234, 0.6)' : '0 12px 40px rgba(0, 0, 0, 0.15)' },
         },
       }}
     >
-      {/* Animated background elements */}
+      {/* Background Orbs */}
       <Box
         sx={{
           position: 'absolute',
@@ -166,19 +135,6 @@ export const LoginPage: React.FC = () => {
           background: 'radial-gradient(circle, rgba(102, 126, 234, 0.1), transparent)',
           borderRadius: '50%',
           animation: 'float 8s ease-in-out infinite',
-          zIndex: 0,
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '10%',
-          left: '5%',
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(245, 124, 0, 0.05), transparent)',
-          borderRadius: '50%',
-          animation: 'float 10s ease-in-out infinite',
           zIndex: 0,
         }}
       />
@@ -194,10 +150,10 @@ export const LoginPage: React.FC = () => {
               borderRadius: 2,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justify: 'space-between',
             }}
           >
-            <Typography variant="body2" sx={{ color: isDarkMode ? '#c9d1d9' : '#1f2937' }}>
+            <Typography variant="body2" sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a', fontWeight: 'bold' }}>
               Logged in as <strong>{user.username}</strong> ({user.email})
             </Typography>
             <Button
@@ -214,62 +170,50 @@ export const LoginPage: React.FC = () => {
         <Paper
           elevation={3}
           sx={{
-            p: 4,
-            background: isDarkMode ? 'rgba(26, 31, 58, 0.85)' : 'rgba(255, 255, 255, 0.95)',
-            color: isDarkMode ? '#c9d1d9' : '#1e293b',
+            p: { xs: 3, sm: 4 },
+            background: isDarkMode ? 'rgba(26, 31, 58, 0.85)' : '#ffffff',
+            color: isDarkMode ? '#c9d1d9' : '#0f172a',
             backdropFilter: 'blur(10px)',
-            border: isDarkMode ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid rgba(2, 132, 199, 0.2)',
-            borderRadius: 2,
-            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+            border: isDarkMode ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid #cbd5e1',
+            borderRadius: 3,
+            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 10px 30px rgba(0, 0, 0, 0.08)',
             animation: 'glow 3s ease-in-out infinite',
           }}
         >
-          {/* Header */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
+          {/* Brand Header */}
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Box
               component="img"
               src="/logo.jpg"
               alt="Cyber Radar Logo"
               sx={{
-                width: 90,
-                height: 90,
+                width: 85,
+                height: 85,
                 borderRadius: '50%',
                 border: '3px solid #00d9ff',
-                boxShadow: '0 0 30px rgba(0, 217, 255, 0.8), inset 0 0 20px rgba(0, 217, 255, 0.4)',
+                boxShadow: '0 0 30px rgba(0, 217, 255, 0.8)',
                 mx: 'auto',
-                mb: 2,
+                mb: 1.5,
                 display: 'block',
-                animation: 'pulseGlow 3s ease-in-out infinite',
-                '@keyframes pulseGlow': {
-                  '0%, 100%': { boxShadow: '0 0 20px rgba(0, 217, 255, 0.6)' },
-                  '50%': { boxShadow: '0 0 45px rgba(0, 217, 255, 1)' },
-                },
+                transition: 'transform 0.3s ease',
+                '&:hover': { transform: 'scale(1.08) rotate(10deg)' },
               }}
             />
-            <Box
+            <Typography
+              variant="h4"
+              component="h1"
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
-                mb: 1,
+                fontWeight: 'bold',
+                background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 50%, #00ff88 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '2px',
+                fontFamily: "'Share Tech Mono', monospace",
+                mb: 0.2,
               }}
             >
-              <Typography
-                variant="h4"
-                component="h1"
-                sx={{
-                  fontWeight: 'bold',
-                  background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 50%, #00ff88 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '2px',
-                  fontFamily: "'Share Tech Mono', monospace",
-                }}
-              >
-                CYBER RADAR
-              </Typography>
-            </Box>
+              CYBER RADAR
+            </Typography>
             <Typography
               variant="body2"
               sx={{
@@ -284,23 +228,14 @@ export const LoginPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Divider
-            sx={{
-              mb: 3,
-              background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent)',
-              height: '1px',
-            }}
-          />
-
-          {/* Error Alert */}
           {error && (
             <Alert
               severity="error"
               sx={{
                 mb: 2,
-                background: 'rgba(244, 67, 54, 0.1)',
-                color: '#ff6b6b',
-                border: '1px solid rgba(244, 67, 54, 0.3)',
+                bgcolor: isDarkMode ? 'rgba(244, 67, 54, 0.1)' : '#fef2f2',
+                color: isDarkMode ? '#ff6b6b' : '#991b1b',
+                border: isDarkMode ? '1px solid rgba(244, 67, 54, 0.3)' : '1px solid #fecaca',
               }}
             >
               {error}
@@ -321,32 +256,21 @@ export const LoginPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Mail sx={{ color: '#667eea', mr: 1, fontSize: '1.2rem' }} />
+                    <Mail sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 1, fontSize: '1.2rem' }} />
                   </InputAdornment>
                 ),
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  color: 'white',
-                  background: 'rgba(102, 126, 234, 0.05)',
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
-                  '&:hover': {
-                    borderColor: 'rgba(102, 126, 234, 0.4)',
-                  },
-                  '&.Mui-focused': {
-                    borderColor: '#667eea',
-                    background: 'rgba(102, 126, 234, 0.1)',
-                    boxShadow: '0 0 20px rgba(102, 126, 234, 0.2)',
-                  },
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
+                  color: isDarkMode ? '#e6edf3' : '#0f172a',
+                  background: isDarkMode ? 'rgba(102, 126, 234, 0.05)' : '#f8fafc',
+                  '& fieldset': { borderColor: isDarkMode ? 'rgba(102, 126, 234, 0.3)' : '#cbd5e1' },
+                  '&:hover fieldset': { borderColor: isDarkMode ? '#00d9ff' : '#0284c7' },
+                  '&.Mui-focused fieldset': { borderColor: isDarkMode ? '#00d9ff' : '#0284c7' },
                 },
                 '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.5)',
-                },
-                '& .MuiFormHelperText-root': {
-                  color: '#ff6b6b',
+                  color: isDarkMode ? '#8b949e' : '#334155',
+                  fontWeight: 600,
                 },
               }}
             />
@@ -363,7 +287,7 @@ export const LoginPage: React.FC = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock sx={{ color: '#667eea', mr: 1, fontSize: '1.2rem' }} />
+                    <Lock sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 1, fontSize: '1.2rem' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -372,12 +296,7 @@ export const LoginPage: React.FC = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
                       size="small"
-                      sx={{
-                        color: '#667eea',
-                        '&:hover': {
-                          background: 'rgba(102, 126, 234, 0.1)',
-                        },
-                      }}
+                      sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7' }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -386,26 +305,15 @@ export const LoginPage: React.FC = () => {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  color: 'white',
-                  background: 'rgba(102, 126, 234, 0.05)',
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
-                  '&:hover': {
-                    borderColor: 'rgba(102, 126, 234, 0.4)',
-                  },
-                  '&.Mui-focused': {
-                    borderColor: '#667eea',
-                    background: 'rgba(102, 126, 234, 0.1)',
-                    boxShadow: '0 0 20px rgba(102, 126, 234, 0.2)',
-                  },
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
+                  color: isDarkMode ? '#e6edf3' : '#0f172a',
+                  background: isDarkMode ? 'rgba(102, 126, 234, 0.05)' : '#f8fafc',
+                  '& fieldset': { borderColor: isDarkMode ? 'rgba(102, 126, 234, 0.3)' : '#cbd5e1' },
+                  '&:hover fieldset': { borderColor: isDarkMode ? '#00d9ff' : '#0284c7' },
+                  '&.Mui-focused fieldset': { borderColor: isDarkMode ? '#00d9ff' : '#0284c7' },
                 },
                 '& .MuiInputLabel-root': {
-                  color: 'rgba(255, 255, 255, 0.5)',
-                },
-                '& .MuiFormHelperText-root': {
-                  color: '#ff6b6b',
+                  color: isDarkMode ? '#8b949e' : '#334155',
+                  fontWeight: 600,
                 },
               }}
             />
@@ -419,19 +327,17 @@ export const LoginPage: React.FC = () => {
               sx={{
                 mt: 3,
                 mb: 1.5,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
+                background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)',
+                color: '#ffffff',
                 fontWeight: 'bold',
                 fontSize: '1rem',
-                py: 1.5,
+                py: 1.4,
+                borderRadius: 2,
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  background: 'linear-gradient(135deg, #667eea 0%, #00d9ff 100%)',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)',
-                },
-                '&:disabled': {
-                  background: 'rgba(102, 126, 234, 0.3)',
+                  boxShadow: '0 8px 25px rgba(0, 217, 255, 0.4)',
                 },
               }}
             >
@@ -448,22 +354,17 @@ export const LoginPage: React.FC = () => {
               startIcon={<PersonOutline />}
               sx={{
                 mb: 2,
-                borderColor: 'rgba(102, 126, 234, 0.5)',
-                color: '#c9d1d9',
+                borderColor: isDarkMode ? 'rgba(0, 217, 255, 0.5)' : '#0284c7',
+                color: isDarkMode ? '#c9d1d9' : '#0f172a',
                 fontWeight: 'bold',
                 fontSize: '0.95rem',
                 py: 1.2,
+                borderRadius: 2,
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#667eea',
-                  color: 'white',
-                  background: 'rgba(102, 126, 234, 0.15)',
+                  borderColor: isDarkMode ? '#00d9ff' : '#0369a1',
+                  bgcolor: isDarkMode ? 'rgba(0, 217, 255, 0.1)' : 'rgba(2, 132, 199, 0.08)',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 5px 20px rgba(102, 126, 234, 0.2)',
-                },
-                '&:disabled': {
-                  borderColor: 'rgba(102, 126, 234, 0.2)',
-                  color: 'rgba(255, 255, 255, 0.3)',
                 },
               }}
             >
@@ -471,97 +372,38 @@ export const LoginPage: React.FC = () => {
             </Button>
           </Box>
 
-          <Divider
-            sx={{
-              my: 2,
-              background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent)',
-            }}
-          />
+          <Divider sx={{ my: 2.5, borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }} />
 
           {/* Register Link */}
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" sx={{ color: isDarkMode ? '#8b949e' : '#334155', fontWeight: 500 }}>
               Don't have an account?{' '}
               <Link
                 to="/register"
                 style={{
-                  color: '#667eea',
+                  color: isDarkMode ? '#00d9ff' : '#0284c7',
                   textDecoration: 'none',
                   fontWeight: 'bold',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.target as any).style.color = '#764ba2'
-                  ;(e.target as any).style.textDecoration = 'underline'
-                }}
-                onMouseLeave={(e) => {
-                  (e.target as any).style.color = '#667eea'
-                  ;(e.target as any).style.textDecoration = 'none'
                 }}
               >
                 Create Account
               </Link>
             </Typography>
           </Box>
-
-          {/* Demo Credentials */}
-          <Box
-            sx={{
-              p: 2,
-              background: 'rgba(102, 126, 234, 0.05)',
-              border: '1px solid rgba(102, 126, 234, 0.2)',
-              borderRadius: 1,
-              backdropFilter: 'blur(5px)',
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block',
-                color: '#667eea',
-                fontWeight: 'bold',
-                mb: 1,
-                fontFamily: 'monospace',
-              }}
-            >
-              DEMO CREDENTIALS
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block',
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-              }}
-            >
-              Email: admin@example.com
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                display: 'block',
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-              }}
-            >
-              Pass: admin123
-            </Typography>
-          </Box>
         </Paper>
 
         {/* Footer */}
-        <Box sx={{ textAlign: 'center', mt: 4, zIndex: 1 }}>
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
           <Typography
             variant="caption"
             sx={{
-              color: 'rgba(255, 255, 255, 0.4)',
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : '#64748b',
               fontFamily: 'monospace',
               fontSize: '0.8rem',
+              fontWeight: 600,
             }}
           >
-            © 2026 PORT SCANNER. All rights reserved.
+            © 2026 CYBER RADAR - ADVANCED PORT SCANNER. All rights reserved.
           </Typography>
         </Box>
       </Container>

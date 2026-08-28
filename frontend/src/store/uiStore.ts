@@ -23,7 +23,7 @@ interface UIState {
 }
 
 export const useUiStore = create<UIState>((set) => ({
-  theme: 'light',
+  theme: 'dark', // Default to night mode
   sidebarOpen: true,
   notifications: [],
 
@@ -66,7 +66,7 @@ export const useUiStore = create<UIState>((set) => ({
   clearNotifications: () => set({ notifications: [] }),
 
   loadThemeFromStorage: () => {
-    const theme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
+    const theme = (localStorage.getItem('theme') as 'light' | 'dark') || 'dark'
     const sidebarOpen =
       JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true') !== false
 
@@ -74,5 +74,4 @@ export const useUiStore = create<UIState>((set) => ({
   },
 }))
 
-// Export both names for compatibility
 export const useUIStore = useUiStore
