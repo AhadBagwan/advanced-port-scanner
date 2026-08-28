@@ -91,60 +91,19 @@ export const LoginPage: React.FC = () => {
         background: isDarkMode
           ? `linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%)`
           : `linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 50%, #cbd5e1 100%)`,
-        position: 'relative',
-        overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        py: 4,
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          width: '200%',
-          height: '200%',
-          top: '-50%',
-          left: '-50%',
-          background: `radial-gradient(circle, ${isDarkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(2, 132, 199, 0.08)'} 1px, transparent 1px)`,
-          backgroundSize: '50px 50px',
-          animation: 'moveGrid 20s linear infinite',
-          pointerEvents: 'none',
-          zIndex: 0,
-        },
-        '@keyframes moveGrid': {
-          '0%': { transform: 'translate(0, 0)' },
-          '100%': { transform: 'translate(50px, 50px)' },
-        },
-        '@keyframes float': {
-          '0%, 100%': { transform: 'translate(0, 0)', opacity: 0.3 },
-          '50%': { transform: 'translate(20px, -20px)', opacity: 0.6 },
-        },
-        '@keyframes glow': {
-          '0%, 100%': { boxShadow: isDarkMode ? '0 0 20px rgba(102, 126, 234, 0.3)' : '0 8px 30px rgba(0, 0, 0, 0.08)' },
-          '50%': { boxShadow: isDarkMode ? '0 0 40px rgba(102, 126, 234, 0.6)' : '0 12px 40px rgba(0, 0, 0, 0.15)' },
-        },
+        py: 2,
+        px: 2,
       }}
     >
-      {/* Background Orbs */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          right: '5%',
-          width: '300px',
-          height: '300px',
-          background: 'radial-gradient(circle, rgba(102, 126, 234, 0.1), transparent)',
-          borderRadius: '50%',
-          animation: 'float 8s ease-in-out infinite',
-          zIndex: 0,
-        }}
-      />
-
-      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xs" sx={{ position: 'relative', zIndex: 1, px: { xs: 1, sm: 2 } }}>
         {user && (
           <Paper
             sx={{
-              p: 2,
-              mb: 3,
+              p: 1.5,
+              mb: 2,
               bgcolor: isDarkMode ? '#161b22' : '#ffffff',
               border: '1px solid #00d9ff',
               borderRadius: 2,
@@ -153,75 +112,74 @@ export const LoginPage: React.FC = () => {
               justify: 'space-between',
             }}
           >
-            <Typography variant="body2" sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a', fontWeight: 'bold' }}>
-              Logged in as <strong>{user.username}</strong> ({user.email})
+            <Typography variant="caption" sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a', fontWeight: 'bold' }}>
+              Logged in as <strong>{user.username}</strong>
             </Typography>
             <Button
               variant="contained"
               size="small"
               onClick={() => navigate('/')}
-              sx={{ background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)', color: 'white', fontWeight: 'bold' }}
+              sx={{ background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)', color: 'white', fontWeight: 'bold', py: 0.5 }}
             >
-              Go to Dashboard
+              Dashboard
             </Button>
           </Paper>
         )}
 
         <Paper
-          elevation={3}
+          elevation={4}
           sx={{
-            p: { xs: 3, sm: 4 },
-            background: isDarkMode ? 'rgba(26, 31, 58, 0.85)' : '#ffffff',
+            p: { xs: 2.5, sm: 3 },
+            background: isDarkMode ? 'rgba(26, 31, 58, 0.9)' : '#ffffff',
             color: isDarkMode ? '#c9d1d9' : '#0f172a',
             backdropFilter: 'blur(10px)',
-            border: isDarkMode ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid #cbd5e1',
+            border: isDarkMode ? '1px solid rgba(102, 126, 234, 0.25)' : '1px solid #cbd5e1',
             borderRadius: 3,
             boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 10px 30px rgba(0, 0, 0, 0.08)',
-            animation: 'glow 3s ease-in-out infinite',
           }}
         >
           {/* Brand Header */}
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
             <Box
               component="img"
               src="/logo.jpg"
               alt="Cyber Radar Logo"
               sx={{
-                width: 85,
-                height: 85,
+                width: 55,
+                height: 55,
                 borderRadius: '50%',
-                border: '3px solid #00d9ff',
-                boxShadow: '0 0 30px rgba(0, 217, 255, 0.8)',
+                border: '2px solid #00d9ff',
+                boxShadow: '0 0 15px rgba(0, 217, 255, 0.7)',
                 mx: 'auto',
-                mb: 1.5,
+                mb: 1,
                 display: 'block',
-                transition: 'transform 0.3s ease',
-                '&:hover': { transform: 'scale(1.08) rotate(10deg)' },
               }}
             />
             <Typography
-              variant="h4"
+              variant="h5"
               component="h1"
               sx={{
                 fontWeight: 'bold',
                 background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 50%, #00ff88 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                letterSpacing: '2px',
+                letterSpacing: '1.5px',
                 fontFamily: "'Share Tech Mono', monospace",
-                mb: 0.2,
+                lineHeight: 1.1,
               }}
             >
               CYBER RADAR
             </Typography>
             <Typography
-              variant="body2"
+              variant="caption"
               sx={{
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : '#0284c7',
+                color: isDarkMode ? '#00d9ff' : '#0284c7',
                 fontFamily: 'monospace',
                 fontWeight: 'bold',
-                fontSize: '0.9rem',
-                letterSpacing: '2px',
+                fontSize: '0.75rem',
+                letterSpacing: '1.5px',
+                display: 'block',
+                mt: 0.2,
               }}
             >
               ADVANCED PORT SCANNER
@@ -232,7 +190,9 @@ export const LoginPage: React.FC = () => {
             <Alert
               severity="error"
               sx={{
-                mb: 2,
+                py: 0.5,
+                mb: 1.5,
+                fontSize: '0.82rem',
                 bgcolor: isDarkMode ? 'rgba(244, 67, 54, 0.1)' : '#fef2f2',
                 color: isDarkMode ? '#ff6b6b' : '#991b1b',
                 border: isDarkMode ? '1px solid rgba(244, 67, 54, 0.3)' : '1px solid #fecaca',
@@ -246,17 +206,18 @@ export const LoginPage: React.FC = () => {
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <TextField
               fullWidth
+              size="small"
               label="Email Address"
               type="email"
               {...register('email')}
               error={!!errors.email}
               helperText={errors.email?.message}
-              margin="normal"
+              margin="dense"
               placeholder="you@example.com"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Mail sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 1, fontSize: '1.2rem' }} />
+                    <Mail sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 0.5, fontSize: '1.1rem' }} />
                   </InputAdornment>
                 ),
               }}
@@ -277,17 +238,18 @@ export const LoginPage: React.FC = () => {
 
             <TextField
               fullWidth
+              size="small"
               label="Password"
               type={showPassword ? 'text' : 'password'}
               {...register('password')}
               error={!!errors.password}
               helperText={errors.password?.message}
-              margin="normal"
+              margin="dense"
               placeholder="••••••••"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Lock sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 1, fontSize: '1.2rem' }} />
+                    <Lock sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7', mr: 0.5, fontSize: '1.1rem' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
@@ -298,7 +260,7 @@ export const LoginPage: React.FC = () => {
                       size="small"
                       sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7' }}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -321,44 +283,44 @@ export const LoginPage: React.FC = () => {
             <Button
               fullWidth
               variant="contained"
-              size="large"
+              size="medium"
               type="submit"
               disabled={isLoading}
               sx={{
-                mt: 3,
-                mb: 1.5,
+                mt: 2,
+                mb: 1,
                 background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)',
                 color: '#ffffff',
                 fontWeight: 'bold',
-                fontSize: '1rem',
-                py: 1.4,
+                fontSize: '0.9rem',
+                py: 1,
                 borderRadius: 2,
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #667eea 0%, #00d9ff 100%)',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(0, 217, 255, 0.4)',
+                  boxShadow: '0 6px 20px rgba(0, 217, 255, 0.4)',
                 },
               }}
             >
-              {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'SIGN IN'}
+              {isLoading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'SIGN IN'}
             </Button>
 
             <Button
               fullWidth
               variant="outlined"
-              size="large"
+              size="medium"
               type="button"
               onClick={handleGuestLogin}
               disabled={isLoading}
-              startIcon={<PersonOutline />}
+              startIcon={<PersonOutline fontSize="small" />}
               sx={{
-                mb: 2,
+                mb: 1.5,
                 borderColor: isDarkMode ? 'rgba(0, 217, 255, 0.5)' : '#0284c7',
                 color: isDarkMode ? '#c9d1d9' : '#0f172a',
                 fontWeight: 'bold',
-                fontSize: '0.95rem',
-                py: 1.2,
+                fontSize: '0.88rem',
+                py: 0.9,
                 borderRadius: 2,
                 transition: 'all 0.3s ease',
                 '&:hover': {
@@ -372,11 +334,11 @@ export const LoginPage: React.FC = () => {
             </Button>
           </Box>
 
-          <Divider sx={{ my: 2.5, borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }} />
+          <Divider sx={{ my: 1.5, borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }} />
 
           {/* Register Link */}
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" sx={{ color: isDarkMode ? '#8b949e' : '#334155', fontWeight: 500 }}>
+            <Typography variant="caption" sx={{ color: isDarkMode ? '#8b949e' : '#334155', fontWeight: 500 }}>
               Don't have an account?{' '}
               <Link
                 to="/register"
@@ -393,17 +355,17 @@ export const LoginPage: React.FC = () => {
         </Paper>
 
         {/* Footer */}
-        <Box sx={{ textAlign: 'center', mt: 3 }}>
+        <Box sx={{ textAlign: 'center', mt: 2 }}>
           <Typography
             variant="caption"
             sx={{
               color: isDarkMode ? 'rgba(255, 255, 255, 0.4)' : '#64748b',
               fontFamily: 'monospace',
-              fontSize: '0.8rem',
+              fontSize: '0.75rem',
               fontWeight: 600,
             }}
           >
-            © 2026 CYBER RADAR - ADVANCED PORT SCANNER. All rights reserved.
+            © 2026 CYBER RADAR - ADVANCED PORT SCANNER
           </Typography>
         </Box>
       </Container>
