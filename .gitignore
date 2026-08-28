@@ -1,0 +1,36 @@
+# Python / Virtual Environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+backend/venv/
+
+# Database & Environment
+*.db
+*.sqlite3
+.env
+backend/.env
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System & OS
+.DS_Store
+Thumbs.db
+*.log
+backend/logs/
+
+# IDE / Antigravity
+.vscode/
+.idea/
+.gemini/

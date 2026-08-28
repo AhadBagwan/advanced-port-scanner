@@ -1,0 +1,43 @@
+# Backend Test Files
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Celery
+celerybeat-schedule
+dump.rdb
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# Poetry
+poetry.lock
