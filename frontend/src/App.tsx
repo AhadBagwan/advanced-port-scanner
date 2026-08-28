@@ -1,8 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
+import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material'
 import { useAuthStore } from './store/authStore'
 import { useUiStore } from './store/uiStore'
+import { Navbar } from './components/Navbar'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { Dashboard } from './pages/Dashboard'
@@ -14,10 +15,18 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2',
+      main: '#0284c7',
     },
     secondary: {
-      main: '#f57c00',
+      main: '#7c3aed',
+    },
+    background: {
+      default: '#f8fafc',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#0f172a',
+      secondary: '#475569',
     },
   },
 })
@@ -26,15 +35,31 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#90caf9',
+      main: '#00d9ff',
     },
     secondary: {
-      main: '#ffb74d',
+      main: '#8b5cf6',
+    },
+    background: {
+      default: '#05070a',
+      paper: '#161b22',
+    },
+    text: {
+      primary: '#e6edf3',
+      secondary: '#8b949e',
     },
   },
 })
 
-
+// Protected Layout with Navigation Bar
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <Box sx={{ minHeight: '100vh' }}>
+      <Navbar />
+      {children}
+    </Box>
+  )
+}
 
 const App: React.FC = () => {
   const isDarkMode = useUiStore((state) => state.theme === 'dark')
@@ -59,20 +84,50 @@ const App: React.FC = () => {
       <CssBaseline />
       <Router>
         <Routes>
-          {isAuthenticated ? (
-            <>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/scans" element={<ScansPage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </>
-          ) : (
-            <>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </>
-          )}
+          {/* Public Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Protected Main Routes */}
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/scans"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <ScansPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <AnalyticsPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />} />
         </Routes>
       </Router>
     </ThemeProvider>

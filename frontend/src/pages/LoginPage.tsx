@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
+import { useUiStore } from '@/store/uiStore'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -29,6 +30,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate()
+  const user = useAuthStore((state) => state.user)
   const setUser = useAuthStore((state) => state.setUser)
   const setTokens = useAuthStore((state) => state.setTokens)
   const [showPassword, setShowPassword] = useState(false)
@@ -97,16 +99,21 @@ export const LoginPage: React.FC = () => {
     }
   }
 
+  const isDarkMode = useUiStore((state) => state.theme === 'dark')
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        background: `linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%)`,
+        background: isDarkMode
+          ? `linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%)`
+          : `linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 50%, #bae6fd 100%)`,
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        py: 4,
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -114,7 +121,7 @@ export const LoginPage: React.FC = () => {
           height: '200%',
           top: '-50%',
           left: '-50%',
-          background: `radial-gradient(circle, rgba(102, 126, 234, 0.1) 1px, transparent 1px)`,
+          background: `radial-gradient(circle, ${isDarkMode ? 'rgba(102, 126, 234, 0.1)' : 'rgba(2, 132, 199, 0.1)'} 1px, transparent 1px)`,
           backgroundSize: '50px 50px',
           animation: 'moveGrid 20s linear infinite',
           pointerEvents: 'none',
@@ -177,15 +184,43 @@ export const LoginPage: React.FC = () => {
       />
 
       <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+        {user && (
+          <Paper
+            sx={{
+              p: 2,
+              mb: 3,
+              bgcolor: isDarkMode ? '#161b22' : '#ffffff',
+              border: '1px solid #00d9ff',
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Typography variant="body2" sx={{ color: isDarkMode ? '#c9d1d9' : '#1f2937' }}>
+              Logged in as <strong>{user.username}</strong> ({user.email})
+            </Typography>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => navigate('/')}
+              sx={{ background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)', color: 'white', fontWeight: 'bold' }}
+            >
+              Go to Dashboard
+            </Button>
+          </Paper>
+        )}
+
         <Paper
           elevation={3}
           sx={{
             p: 4,
-            background: 'rgba(26, 31, 58, 0.8)',
+            background: isDarkMode ? 'rgba(26, 31, 58, 0.85)' : 'rgba(255, 255, 255, 0.95)',
+            color: isDarkMode ? '#c9d1d9' : '#1e293b',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(102, 126, 234, 0.2)',
+            border: isDarkMode ? '1px solid rgba(102, 126, 234, 0.2)' : '1px solid rgba(2, 132, 199, 0.2)',
             borderRadius: 2,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
             animation: 'glow 3s ease-in-out infinite',
           }}
         >
