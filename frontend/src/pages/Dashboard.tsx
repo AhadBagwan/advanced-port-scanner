@@ -20,6 +20,7 @@ import {
 import { Radar, Shield, Speed as Activity, FlashOn as Zap, Refresh, Add, ArrowForward } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useUiStore } from '@/store/uiStore'
 import { scanService } from '@/services/scanService'
 import apiClient from '@/services/api'
 import type { Scan } from '@/types'
@@ -34,7 +35,9 @@ interface DashboardStats {
 
 export const Dashboard: React.FC = () => {
   const user = useAuthStore((state) => state.user)
+  const isDarkMode = useUiStore((state) => state.theme === 'dark')
   const navigate = useNavigate()
+
   const [stats, setStats] = useState<DashboardStats>({
     totalScans: 0,
     completedScans: 0,
@@ -95,26 +98,54 @@ export const Dashboard: React.FC = () => {
 
   const statsCards = useMemo(
     () => [
-      { label: 'Active Scans', value: stats.totalScans, icon: <Activity />, color: '#00d9ff', border: '1px solid rgba(0, 217, 255, 0.3)' },
-      { label: 'Completed Jobs', value: stats.completedScans, icon: <Shield />, color: '#00ff88', border: '1px solid rgba(0, 255, 136, 0.3)' },
-      { label: 'Open Ports Detected', value: stats.totalOpenPorts, icon: <Radar />, color: '#ff4d4d', border: '1px solid rgba(255, 77, 77, 0.3)' },
-      { label: 'Avg Duration', value: `${stats.avgScanDuration}s`, icon: <Zap />, color: '#ffb020', border: '1px solid rgba(255, 176, 32, 0.3)' },
+      {
+        label: 'Active Scans',
+        value: stats.totalScans,
+        icon: <Activity />,
+        color: isDarkMode ? '#00d9ff' : '#0284c7',
+        border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #bae6fd',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+      },
+      {
+        label: 'Completed Jobs',
+        value: stats.completedScans,
+        icon: <Shield />,
+        color: isDarkMode ? '#00ff88' : '#16a34a',
+        border: isDarkMode ? '1px solid rgba(0, 255, 136, 0.3)' : '1px solid #bbf7d0',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+      },
+      {
+        label: 'Open Ports Detected',
+        value: stats.totalOpenPorts,
+        icon: <Radar />,
+        color: isDarkMode ? '#ff4d4d' : '#dc2626',
+        border: isDarkMode ? '1px solid rgba(255, 77, 77, 0.3)' : '1px solid #fecaca',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+      },
+      {
+        label: 'Avg Duration',
+        value: `${stats.avgScanDuration}s`,
+        icon: <Zap />,
+        color: isDarkMode ? '#ffb020' : '#d97706',
+        border: isDarkMode ? '1px solid rgba(255, 176, 32, 0.3)' : '1px solid #fef08a',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+      },
     ],
-    [stats]
+    [stats, isDarkMode]
   )
 
   return (
-    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: '#05070a', color: '#e6edf3' }}>
+    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#f8fafc', color: isDarkMode ? '#e6edf3' : '#0f172a' }}>
       <Container maxWidth="lg">
-        {/* Hero Cyber Banner with Uploaded Logo */}
+        {/* Hero Cyber Banner with Logo */}
         <Paper
           sx={{
-            p: 4,
+            p: { xs: 2.5, md: 4 },
             mb: 4,
-            bgcolor: 'rgba(18, 22, 29, 0.7)',
+            bgcolor: isDarkMode ? 'rgba(18, 22, 29, 0.7)' : '#ffffff',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(0, 217, 255, 0.3)',
-            boxShadow: '0 0 30px rgba(0, 217, 255, 0.15)',
+            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #e2e8f0',
+            boxShadow: isDarkMode ? '0 0 30px rgba(0, 217, 255, 0.15)' : '0 4px 20px rgba(0, 0, 0, 0.05)',
             borderRadius: 3,
             position: 'relative',
             overflow: 'hidden',
@@ -122,14 +153,14 @@ export const Dashboard: React.FC = () => {
         >
           <Grid container spacing={3} alignItems="center">
             <Grid item xs={12} md={8}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, flexWrap: 'wrap' }}>
                 <Box
                   component="img"
                   src="/logo.jpg"
                   alt="Cyber Radar Logo"
                   sx={{
-                    width: 70,
-                    height: 70,
+                    width: { xs: 50, sm: 70 },
+                    height: { xs: 50, sm: 70 },
                     borderRadius: '50%',
                     border: '2px solid #00d9ff',
                     boxShadow: '0 0 25px rgba(0, 217, 255, 0.8)',
@@ -145,11 +176,12 @@ export const Dashboard: React.FC = () => {
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       letterSpacing: '1px',
+                      fontSize: { xs: '1.4rem', sm: '2rem' },
                     }}
                   >
                     CYBER RADAR RECON SYSTEM
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#8b949e', fontFamily: 'monospace' }}>
+                  <Typography variant="body2" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontFamily: 'monospace', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                     REAL-TIME THREAT INTELLIGENCE & PORT RECONNAISSANCE PLATFORM
                   </Typography>
                 </Box>
@@ -161,9 +193,10 @@ export const Dashboard: React.FC = () => {
                 variant="contained"
                 startIcon={<Add />}
                 onClick={() => navigate('/scans')}
+                fullWidth={{ xs: true, md: false } as any}
                 sx={{
                   background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)',
-                  color: '#05070a',
+                  color: '#ffffff',
                   fontWeight: 'bold',
                   py: 1.2,
                   px: 3,
@@ -171,7 +204,6 @@ export const Dashboard: React.FC = () => {
                   boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
                   '&:hover': {
                     background: 'linear-gradient(135deg, #00ff88 0%, #00d9ff 100%)',
-                    boxShadow: '0 0 30px rgba(0, 255, 136, 0.6)',
                   },
                 }}
               >
@@ -187,20 +219,19 @@ export const Dashboard: React.FC = () => {
             <Grid item xs={12} sm={6} md={3} key={stat.label}>
               <Card
                 sx={{
-                  bgcolor: 'rgba(22, 27, 34, 0.8)',
+                  bgcolor: stat.bg,
                   border: stat.border,
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: `0 0 15px ${stat.color}15`,
+                  boxShadow: isDarkMode ? `0 0 15px ${stat.color}15` : '0 2px 10px rgba(0, 0, 0, 0.04)',
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: `0 0 25px ${stat.color}40`,
+                    boxShadow: isDarkMode ? `0 0 25px ${stat.color}40` : '0 6px 16px rgba(0, 0, 0, 0.08)',
                   },
                 }}
               >
                 <CardContent sx={{ p: 2.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="caption" sx={{ color: '#8b949e', fontWeight: 'bold', letterSpacing: '1px', fontFamily: 'monospace' }}>
+                    <Typography variant="caption" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold', letterSpacing: '1px', fontFamily: 'monospace' }}>
                       {stat.label.toUpperCase()}
                     </Typography>
                     <Box sx={{ color: stat.color }}>{stat.icon}</Box>
@@ -217,23 +248,23 @@ export const Dashboard: React.FC = () => {
         {/* Recent Scans Table */}
         <Paper
           sx={{
-            p: 3,
-            bgcolor: 'rgba(22, 27, 34, 0.8)',
-            border: '1px solid rgba(0, 217, 255, 0.2)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            p: { xs: 2, sm: 3 },
+            bgcolor: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.2)' : '1px solid #e2e8f0',
+            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 4px 16px rgba(0, 0, 0, 0.05)',
             borderRadius: 2,
           }}
         >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: "'Share Tech Mono', monospace", color: '#00d9ff', letterSpacing: '1px' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, flexWrap: 'wrap', gap: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7', letterSpacing: '1px' }}>
               📡 RECENT RECON SCANS
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button size="small" variant="outlined" startIcon={<Refresh />} onClick={fetchDashboard} sx={{ color: '#8b949e', borderColor: '#30363d' }}>
+              <Button size="small" variant="outlined" startIcon={<Refresh />} onClick={fetchDashboard} sx={{ color: isDarkMode ? '#8b949e' : '#475569', borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }}>
                 Refresh
               </Button>
-              <Button size="small" variant="contained" endIcon={<ArrowForward />} onClick={() => navigate('/scans')} sx={{ bgcolor: '#161b22', color: '#58a6ff', '&:hover': { bgcolor: '#21262d' } }}>
-                View All Scans
+              <Button size="small" variant="contained" endIcon={<ArrowForward />} onClick={() => navigate('/scans')} sx={{ bgcolor: isDarkMode ? '#161b22' : '#0284c7', color: '#ffffff', '&:hover': { bgcolor: isDarkMode ? '#21262d' : '#0369a1' } }}>
+                View All
               </Button>
             </Box>
           </Box>
@@ -243,10 +274,10 @@ export const Dashboard: React.FC = () => {
               <CircularProgress size={32} sx={{ color: '#00d9ff' }} />
             </Box>
           ) : (
-            <TableContainer>
+            <TableContainer sx={{ overflowX: 'auto' }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ '& th': { bgcolor: '#0d1117', color: '#8b949e', fontWeight: 'bold', fontFamily: 'monospace' } }}>
+                  <TableRow sx={{ '& th': { bgcolor: isDarkMode ? '#0d1117' : '#f8fafc', color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold', fontFamily: 'monospace' } }}>
                     <TableCell>TARGET HOST</TableCell>
                     <TableCell>PORT SCOPE</TableCell>
                     <TableCell>STATUS</TableCell>
@@ -257,24 +288,24 @@ export const Dashboard: React.FC = () => {
                 <TableBody>
                   {recentScans.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} sx={{ textAlign: 'center', color: '#8b949e', py: 3 }}>
+                      <TableCell colSpan={5} sx={{ textAlign: 'center', color: isDarkMode ? '#8b949e' : '#64748b', py: 3 }}>
                         No scan history found. Launch your first scan above!
                       </TableCell>
                     </TableRow>
                   ) : (
                     recentScans.map((scan) => (
-                      <TableRow key={scan.id} hover sx={{ '& td': { color: '#c9d1d9', borderColor: '#30363d' }, '&:hover': { bgcolor: '#0d1117' } }}>
-                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#00d9ff' }}>{scan.target_host}</TableCell>
+                      <TableRow key={scan.id} hover sx={{ '& td': { color: isDarkMode ? '#c9d1d9' : '#1e293b', borderColor: isDarkMode ? '#30363d' : '#e2e8f0' }, '&:hover': { bgcolor: isDarkMode ? '#0d1117' : '#f1f5f9' } }}>
+                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 'bold', color: isDarkMode ? '#00d9ff' : '#0284c7' }}>{scan.target_host}</TableCell>
                         <TableCell sx={{ fontFamily: 'monospace' }}>
                           {scan.port_range_start}-{scan.port_range_end}
                         </TableCell>
                         <TableCell>
                           <Chip size="small" label={scan.status.toUpperCase()} color={statusColor(scan.status) as any} variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem' }} />
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: scan.open_ports_count > 0 ? '#00ff88' : '#8b949e' }}>
+                        <TableCell sx={{ fontWeight: 'bold', color: scan.open_ports_count > 0 ? (isDarkMode ? '#00ff88' : '#16a34a') : (isDarkMode ? '#8b949e' : '#64748b') }}>
                           {scan.open_ports_count} ports
                         </TableCell>
-                        <TableCell sx={{ color: '#8b949e', fontSize: '0.85rem' }}>{new Date(scan.created_at).toLocaleString()}</TableCell>
+                        <TableCell sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontSize: '0.85rem' }}>{new Date(scan.created_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))
                   )}

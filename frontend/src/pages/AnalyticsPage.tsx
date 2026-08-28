@@ -17,9 +17,11 @@ import {
 } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useUiStore } from '@/store/uiStore'
 
 export const AnalyticsPage: React.FC = () => {
   const user = useAuthStore((state) => state.user)
+  const isDarkMode = useUiStore((state) => state.theme === 'dark')
   const navigate = useNavigate()
 
   if (!user) {
@@ -27,11 +29,10 @@ export const AnalyticsPage: React.FC = () => {
     return null
   }
 
-  // Chart data
   const statusData = [
-    { name: 'Completed', value: 8, fill: '#3fb950' },
-    { name: 'Running', value: 1, fill: '#d29922' },
-    { name: 'Failed', value: 1, fill: '#f85149' },
+    { name: 'Completed', value: 8, fill: '#16a34a' },
+    { name: 'Running', value: 1, fill: '#d97706' },
+    { name: 'Failed', value: 1, fill: '#dc2626' },
   ]
 
   const vulnerabilityRiskData = [
@@ -64,21 +65,21 @@ export const AnalyticsPage: React.FC = () => {
   ]
 
   const stats = [
-    { label: 'Total Scans', value: '10', color: '#58a6ff' },
-    { label: 'Success Rate', value: '80%', color: '#3fb950' },
-    { label: 'Threat Index', value: 'Medium Risk', color: '#ffc53d' },
-    { label: 'Total Ports Scanned', value: '10,050', color: '#667eea' },
+    { label: 'Total Scans', value: '10', color: isDarkMode ? '#00d9ff' : '#0284c7' },
+    { label: 'Success Rate', value: '80%', color: '#16a34a' },
+    { label: 'Threat Index', value: 'Medium Risk', color: '#d97706' },
+    { label: 'Total Ports Scanned', value: '10,050', color: '#7c3aed' },
   ]
 
   return (
-    <Box sx={{ py: 3, minHeight: '100vh', bgcolor: '#0d1117', color: '#c9d1d9' }}>
+    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#f8fafc', color: isDarkMode ? '#e6edf3' : '#0f172a' }}>
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 0.5 }}>
-            📊 Analytics & Threat Intelligence Reports
+          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 0.5, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
+            📊 ANALYTICS & THREAT INTELLIGENCE
           </Typography>
-          <Typography variant="body2" color="#8b949e">
+          <Typography variant="body2" color={isDarkMode ? '#8b949e' : '#64748b'}>
             Comprehensive security posture insights, vulnerability risk distribution, and historical trends
           </Typography>
         </Box>
@@ -87,12 +88,12 @@ export const AnalyticsPage: React.FC = () => {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {stats.map((stat, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card sx={{ bgcolor: '#161b22', border: '1px solid #30363d' }}>
+              <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
                 <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                  <Typography variant="caption" sx={{ color: '#8b949e', display: 'block', mb: 1 }}>
-                    {stat.label}
+                  <Typography variant="caption" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', display: 'block', mb: 1, fontWeight: 'bold', fontFamily: 'monospace' }}>
+                    {stat.label.toUpperCase()}
                   </Typography>
-                  <Typography variant="h5" sx={{ color: stat.color, fontWeight: 'bold' }}>
+                  <Typography variant="h5" sx={{ color: stat.color, fontWeight: 'bold', fontFamily: "'Share Tech Mono', monospace" }}>
                     {stat.value}
                   </Typography>
                 </CardContent>
@@ -105,8 +106,8 @@ export const AnalyticsPage: React.FC = () => {
         <Grid container spacing={3}>
           {/* Status Distribution */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, bgcolor: '#161b22', border: '1px solid #30363d' }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+            <Paper sx={{ p: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
                 📈 Scan Status Distribution
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -124,7 +125,7 @@ export const AnalyticsPage: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', color: '#c9d1d9' }} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#0d1117' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -132,9 +133,9 @@ export const AnalyticsPage: React.FC = () => {
 
           {/* Vulnerability Severity Breakdown */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, bgcolor: '#161b22', border: '1px solid #30363d' }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
-                🛡️ Discovered Vulnerability Risk Ratings
+            <Paper sx={{ p: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
+                🛡️ Vulnerability Risk Ratings
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -151,7 +152,7 @@ export const AnalyticsPage: React.FC = () => {
                       <Cell key={`cell-vuln-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', color: '#c9d1d9' }} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#0d1117' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -159,17 +160,17 @@ export const AnalyticsPage: React.FC = () => {
 
           {/* Top Targets */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, bgcolor: '#161b22', border: '1px solid #30363d' }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+            <Paper sx={{ p: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
                 🎯 Top Targets by Open Ports
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={portsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
-                  <XAxis dataKey="target" tick={{ fill: '#8b949e', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#8b949e', fontSize: 12 }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', color: '#c9d1d9' }} />
-                  <Bar dataKey="ports" fill="#667eea" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#30363d' : '#e2e8f0'} />
+                  <XAxis dataKey="target" tick={{ fill: isDarkMode ? '#8b949e' : '#64748b', fontSize: 12 }} />
+                  <YAxis tick={{ fill: isDarkMode ? '#8b949e' : '#64748b', fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#0d1117' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
+                  <Bar dataKey="ports" fill={isDarkMode ? '#00d9ff' : '#0284c7'} />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>
@@ -177,19 +178,19 @@ export const AnalyticsPage: React.FC = () => {
 
           {/* Timeline */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, bgcolor: '#161b22', border: '1px solid #30363d' }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+            <Paper sx={{ p: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
                 📅 Scanning Activity Timeline
               </Typography>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={timelineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
-                  <XAxis dataKey="time" tick={{ fill: '#8b949e', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#8b949e', fontSize: 12 }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0d1117', border: '1px solid #30363d', color: '#c9d1d9' }} />
-                  <Legend wrapperStyle={{ color: '#c9d1d9' }} />
-                  <Line type="monotone" dataKey="scans" stroke="#58a6ff" strokeWidth={2} dot={{ fill: '#58a6ff' }} />
-                  <Line type="monotone" dataKey="ports" stroke="#3fb950" strokeWidth={2} dot={{ fill: '#3fb950' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#30363d' : '#e2e8f0'} />
+                  <XAxis dataKey="time" tick={{ fill: isDarkMode ? '#8b949e' : '#64748b', fontSize: 12 }} />
+                  <YAxis tick={{ fill: isDarkMode ? '#8b949e' : '#64748b', fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#0d1117' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
+                  <Legend wrapperStyle={{ color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
+                  <Line type="monotone" dataKey="scans" stroke={isDarkMode ? '#00d9ff' : '#0284c7'} strokeWidth={2} dot={{ fill: isDarkMode ? '#00d9ff' : '#0284c7' }} />
+                  <Line type="monotone" dataKey="ports" stroke="#16a34a" strokeWidth={2} dot={{ fill: '#16a34a' }} />
                 </LineChart>
               </ResponsiveContainer>
             </Paper>
