@@ -1,6 +1,14 @@
 import axios, { AxiosInstance, AxiosError } from 'axios'
 
-const API_BASE_PATH = '/api'
+const getBaseUrl = () => {
+  let envUrl = import.meta.env.VITE_API_BASE_URL || '/api'
+  if (envUrl.endsWith('/')) {
+    envUrl = envUrl.slice(0, -1)
+  }
+  return envUrl
+}
+
+const API_BASE_PATH = getBaseUrl()
 
 class APIClient {
   private client: AxiosInstance
@@ -72,4 +80,3 @@ class APIClient {
 
 export const apiClient = new APIClient().instance
 export default apiClient
-

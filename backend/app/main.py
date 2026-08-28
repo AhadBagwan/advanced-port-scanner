@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database.session import Base, engine
+from app.database.session import Base, engine, SessionLocal
 from app.models import AuditLog, Scan, ScanResult, ScanTag, User
 from app.routers import admin, auth, scans, services, stats
 from app.utils.logger import logger
@@ -20,6 +20,30 @@ async def lifespan(app: FastAPI):
     """Application lifespan context"""
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
+
+    # Auto-seed initial admin & guest users if not present
+    try:
+        from app.services.user_service import UserService
+        db = SessionLocal()
+
+        # Seed Admin
+        try:
+            UserService.get_user_by_email(db, "admin@example.com")
+        except Exception:
+            UserService.create_user(db, "admin@example.com", "admin123", "admin", "admin")
+            logger.info("Auto-seeded admin user: admin@example.com")
+
+        # Seed Guest User
+        try:
+            UserService.get_user_by_email(db, "guest@example.com")
+        except Exception:
+            UserService.create_user(db, "guest@example.com", "guest12345", "guest", "user")
+            logger.info("Auto-seeded guest user: guest@example.com")
+
+        db.close()
+    except Exception as exc:
+        logger.warning(f"Database auto-seeding warning: {exc}")
+
     yield
     logger.info("Shutting down application")
 
@@ -32,11 +56,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Add CORS middleware
+# Add CORS middleware (Allow all production frontend origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
