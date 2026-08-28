@@ -74,12 +74,13 @@ export const Navbar: React.FC = () => {
         sx={{
           bgcolor: isDarkMode ? '#161b22' : '#ffffff',
           color: isDarkMode ? '#c9d1d9' : '#0f172a',
-          borderBottom: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0',
-          boxShadow: isDarkMode ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.08)',
+          borderBottom: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1',
+          boxShadow: isDarkMode ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 15px rgba(0,0,0,0.06)',
+          transition: 'all 0.3s ease',
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {/* Logo & Brand */}
+          {/* Logo & Brand Header */}
           <Box
             sx={{
               fontSize: '1.4rem',
@@ -98,11 +99,16 @@ export const Navbar: React.FC = () => {
               src="/logo.jpg"
               alt="Cyber Radar Logo"
               sx={{
-                width: 38,
-                height: 38,
+                width: 40,
+                height: 40,
                 borderRadius: '50%',
                 border: '2px solid #00d9ff',
-                boxShadow: '0 0 15px rgba(0, 217, 255, 0.6)',
+                boxShadow: isDarkMode ? '0 0 15px rgba(0, 217, 255, 0.6)' : '0 0 10px rgba(2, 132, 199, 0.4)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.15) rotate(15deg)',
+                  boxShadow: '0 0 25px rgba(0, 217, 255, 0.9)',
+                },
               }}
             />
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -123,13 +129,14 @@ export const Navbar: React.FC = () => {
               <Typography
                 variant="caption"
                 sx={{
-                  color: isDarkMode ? 'rgba(0, 217, 255, 0.7)' : '#0284c7',
+                  color: isDarkMode ? 'rgba(0, 217, 255, 0.8)' : '#0284c7',
                   fontSize: '0.65rem',
-                  letterSpacing: '2px',
+                  letterSpacing: '1.5px',
                   fontFamily: 'monospace',
+                  fontWeight: 'bold',
                 }}
               >
-                PORT SCANNER
+                ADVANCED PORT SCANNER
               </Typography>
             </Box>
           </Box>
@@ -145,7 +152,14 @@ export const Navbar: React.FC = () => {
                   textTransform: 'none',
                   color: isDarkMode ? '#8b949e' : '#475569',
                   fontWeight: 600,
-                  '&:hover': { color: isDarkMode ? '#c9d1d9' : '#0f172a' },
+                  transition: 'all 0.25s ease',
+                  borderRadius: 2,
+                  px: 1.8,
+                  '&:hover': {
+                    color: isDarkMode ? '#00d9ff' : '#0284c7',
+                    bgcolor: isDarkMode ? 'rgba(0, 217, 255, 0.1)' : 'rgba(2, 132, 199, 0.08)',
+                    transform: 'translateY(-2px)',
+                  },
                 }}
               >
                 {item.label}
@@ -153,14 +167,16 @@ export const Navbar: React.FC = () => {
             ))}
 
             {/* Light / Dark Mode Toggle */}
-            <Tooltip title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+            <Tooltip title={isDarkMode ? 'Switch to Soft Gray Light Mode' : 'Switch to Cyber Dark Mode'}>
               <IconButton
                 onClick={toggleTheme}
                 sx={{
                   color: isDarkMode ? '#ffb020' : '#4f46e5',
-                  bgcolor: isDarkMode ? 'rgba(255, 176, 32, 0.1)' : 'rgba(79, 70, 229, 0.1)',
+                  bgcolor: isDarkMode ? 'rgba(255, 176, 32, 0.12)' : 'rgba(79, 70, 229, 0.08)',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
-                    bgcolor: isDarkMode ? 'rgba(255, 176, 32, 0.2)' : 'rgba(79, 70, 229, 0.2)',
+                    bgcolor: isDarkMode ? 'rgba(255, 176, 32, 0.25)' : 'rgba(79, 70, 229, 0.18)',
+                    transform: 'rotate(180deg) scale(1.1)',
                   },
                 }}
               >
@@ -175,7 +191,15 @@ export const Navbar: React.FC = () => {
               sx={{
                 textTransform: 'none',
                 color: isDarkMode ? '#00d9ff' : '#0284c7',
+                border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #93c5fd',
+                borderRadius: 2,
                 fontWeight: 'bold',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  bgcolor: isDarkMode ? 'rgba(0, 217, 255, 0.15)' : 'rgba(2, 132, 199, 0.1)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: isDarkMode ? '0 0 15px rgba(0, 217, 255, 0.4)' : '0 4px 12px rgba(2, 132, 199, 0.2)',
+                },
               }}
             >
               Profile
@@ -191,15 +215,21 @@ export const Navbar: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
+                  borderRadius: 2,
+                  transition: 'all 0.25s ease',
+                  '&:hover': {
+                    bgcolor: isDarkMode ? '#21262d' : '#f1f5f9',
+                  },
                 }}
               >
                 <Avatar
                   sx={{
-                    width: 32,
-                    height: 32,
+                    width: 34,
+                    height: 34,
                     bgcolor: '#667eea',
                     fontSize: '0.9rem',
                     fontWeight: 'bold',
+                    boxShadow: '0 0 10px rgba(102, 126, 234, 0.5)',
                   }}
                 >
                   {user?.username?.charAt(0).toUpperCase()}
@@ -214,7 +244,8 @@ export const Navbar: React.FC = () => {
                   sx: {
                     bgcolor: isDarkMode ? '#161b22' : '#ffffff',
                     color: isDarkMode ? '#c9d1d9' : '#0f172a',
-                    border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0',
+                    border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                   },
                 }}
               >
@@ -234,7 +265,7 @@ export const Navbar: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Mobile Right Icons (Hamburger & Theme Toggle) */}
+          {/* Mobile Right Controls */}
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
             <IconButton onClick={toggleTheme} sx={{ color: isDarkMode ? '#ffb020' : '#4f46e5' }}>
               {isDarkMode ? <LightMode /> : <DarkMode />}
@@ -268,7 +299,7 @@ export const Navbar: React.FC = () => {
             <CloseIcon sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a' }} />
           </IconButton>
         </Box>
-        <Divider sx={{ mb: 2, borderColor: isDarkMode ? '#30363d' : '#e2e8f0' }} />
+        <Divider sx={{ mb: 2, borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }} />
 
         {user && (
           <Box sx={{ p: 1.5, mb: 2, bgcolor: isDarkMode ? '#0d1117' : '#f1f5f9', borderRadius: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -310,10 +341,7 @@ export const Navbar: React.FC = () => {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{ borderRadius: 1.5, color: '#f85149' }}
-            >
+            <ListItemButton onClick={handleLogout} sx={{ borderRadius: 1.5, color: '#f85149' }}>
               <ListItemIcon sx={{ color: '#f85149' }}><Logout /></ListItemIcon>
               <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 600 }} />
             </ListItemButton>

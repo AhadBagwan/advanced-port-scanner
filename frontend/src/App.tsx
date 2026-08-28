@@ -10,7 +10,7 @@ import { Dashboard } from './pages/Dashboard'
 import { ScansPage } from './pages/ScansPage'
 import { AnalyticsPage } from './pages/AnalyticsPage'
 
-// Create themes
+// Create soft off-white gray light theme
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
@@ -21,8 +21,8 @@ const lightTheme = createTheme({
       main: '#7c3aed',
     },
     background: {
-      default: '#f8fafc',
-      paper: '#ffffff',
+      default: '#e2e8f0', // Soft off-white gray background
+      paper: '#ffffff',   // Clean elevated surface
     },
     text: {
       primary: '#0f172a',

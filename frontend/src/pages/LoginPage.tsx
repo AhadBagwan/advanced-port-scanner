@@ -273,13 +273,14 @@ export const LoginPage: React.FC = () => {
             <Typography
               variant="body2"
               sx={{
-                color: 'rgba(255, 255, 255, 0.6)',
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : '#0284c7',
                 fontFamily: 'monospace',
+                fontWeight: 'bold',
                 fontSize: '0.9rem',
                 letterSpacing: '2px',
               }}
             >
-              NETWORK INTELLIGENCE PLATFORM
+              ADVANCED PORT SCANNER
             </Typography>
           </Box>
 

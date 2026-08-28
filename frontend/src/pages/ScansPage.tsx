@@ -73,7 +73,6 @@ export const ScansPage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingDetails, setLoadingDetails] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [scans, setScans] = useState<Scan[]>([])
 
   // Create scan form state
@@ -102,11 +101,9 @@ export const ScansPage: React.FC = () => {
   const fetchScans = async () => {
     try {
       setLoading(true)
-      setError(null)
       const response = await scanService.listScans(0, 1000)
       setScans(response.items)
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch scans')
       setScans([])
     } finally {
       setLoading(false)
@@ -166,17 +163,6 @@ export const ScansPage: React.FC = () => {
       )
     }
 
-    if (filters.status) {
-      result = result.filter((scan) => scan.status === filters.status)
-    }
-
-    if (filters.minPorts) {
-      result = result.filter((scan) => scan.open_ports_count >= parseInt(filters.minPorts))
-    }
-    if (filters.maxPorts) {
-      result = result.filter((scan) => scan.open_ports_count <= parseInt(filters.maxPorts))
-    }
-
     return result
   }
 
@@ -187,15 +173,6 @@ export const ScansPage: React.FC = () => {
     page * rowsPerPage + rowsPerPage
   )
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
-
   const handleViewDetails = async (scan: Scan) => {
     setSelectedScan(scan)
     setOpenDetails(true)
@@ -205,7 +182,6 @@ export const ScansPage: React.FC = () => {
       setSelectedScan(detail)
       setScanResults(detail.results || [])
     } catch (err) {
-      console.error('Failed to load scan details:', err)
       setScanResults([])
     } finally {
       setLoadingDetails(false)
@@ -223,7 +199,7 @@ export const ScansPage: React.FC = () => {
         setScans(scans.filter((s) => s.id !== openDelete))
         setOpenDelete(null)
       } catch (err: any) {
-        setError('Failed to delete scan')
+        console.error(err)
       }
     }
   }
@@ -240,7 +216,7 @@ export const ScansPage: React.FC = () => {
       a.click()
       URL.revokeObjectURL(url)
     } catch (err: any) {
-      setError('Failed to export scan')
+      console.error(err)
     }
   }
 
@@ -275,16 +251,19 @@ export const ScansPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#f8fafc', color: isDarkMode ? '#e6edf3' : '#0f172a' }}>
+    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#e2e8f0', color: isDarkMode ? '#e6edf3' : '#0f172a', transition: 'background-color 0.3s ease' }}>
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 0.5, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
-              📋 SCANS MANAGEMENT
+            <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 0.2, fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
+              CYBER RADAR
             </Typography>
-            <Typography variant="body2" color={isDarkMode ? '#8b949e' : '#64748b'}>
-              Manage network scans, CVE threat ratings, and scan comparisons
+            <Typography variant="subtitle2" sx={{ fontWeight: 'bold', fontFamily: 'monospace', color: isDarkMode ? '#00ff88' : '#16a34a', letterSpacing: '1.5px' }}>
+              ADVANCED PORT SCANNER
+            </Typography>
+            <Typography variant="body2" color={isDarkMode ? '#8b949e' : '#475569'} sx={{ mt: 0.5 }}>
+              Scan Management, CVE Threat Analysis & Comparison Engine
             </Typography>
           </Box>
 
@@ -297,6 +276,11 @@ export const ScansPage: React.FC = () => {
                 background: 'linear-gradient(135deg, #00d9ff 0%, #667eea 100%)',
                 color: '#ffffff',
                 fontWeight: 'bold',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 8px 20px rgba(0, 217, 255, 0.4)',
+                },
               }}
             >
               New Scan
@@ -310,7 +294,11 @@ export const ScansPage: React.FC = () => {
               sx={{
                 color: isDarkMode ? '#c9d1d9' : '#0f172a',
                 borderColor: isDarkMode ? '#30363d' : '#cbd5e1',
-                '&:hover': { bgcolor: isDarkMode ? '#161b22' : '#e2e8f0' },
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  bgcolor: isDarkMode ? '#161b22' : '#ffffff',
+                  transform: 'translateY(-2px)',
+                },
               }}
             >
               Compare Scans
@@ -324,7 +312,11 @@ export const ScansPage: React.FC = () => {
               sx={{
                 color: isDarkMode ? '#58a6ff' : '#0284c7',
                 borderColor: isDarkMode ? '#30363d' : '#cbd5e1',
-                '&:hover': { bgcolor: isDarkMode ? '#161b22' : '#e2e8f0' },
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  bgcolor: isDarkMode ? '#161b22' : '#ffffff',
+                  transform: 'rotate(180deg)',
+                },
               }}
             >
               Refresh
@@ -335,40 +327,40 @@ export const ScansPage: React.FC = () => {
         {/* Stats Row */}
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={3}>
-            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', color: isDarkMode ? '#c9d1d9' : '#0f172a' }}>
+            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2, transition: 'transform 0.3s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
               <CardContent sx={{ py: 2 }}>
-                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Total Scans</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
+                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'} sx={{ fontWeight: 'bold' }}>TOTAL SCANS</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: isDarkMode ? '#00d9ff' : '#0284c7', fontFamily: "'Share Tech Mono', monospace" }}>
                   {scans.length}
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', color: isDarkMode ? '#c9d1d9' : '#0f172a' }}>
+            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2, transition: 'transform 0.3s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
               <CardContent sx={{ py: 2 }}>
-                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Completed</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#16a34a' }}>
+                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'} sx={{ fontWeight: 'bold' }}>COMPLETED</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#16a34a', fontFamily: "'Share Tech Mono', monospace" }}>
                   {scans.filter(s => s.status === 'completed').length}
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', color: isDarkMode ? '#c9d1d9' : '#0f172a' }}>
+            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2, transition: 'transform 0.3s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
               <CardContent sx={{ py: 2 }}>
-                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Open Ports Found</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#d97706' }}>
+                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'} sx={{ fontWeight: 'bold' }}>OPEN PORTS</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#d97706', fontFamily: "'Share Tech Mono', monospace" }}>
                   {scans.reduce((a, b) => a + b.open_ports_count, 0)}
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={3}>
-            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', color: isDarkMode ? '#c9d1d9' : '#0f172a' }}>
+            <Card sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2, transition: 'transform 0.3s ease', '&:hover': { transform: 'translateY(-4px)' } }}>
               <CardContent sx={{ py: 2 }}>
-                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Running Jobs</Typography>
-                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#7c3aed' }}>
+                <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'} sx={{ fontWeight: 'bold' }}>RUNNING JOBS</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#7c3aed', fontFamily: "'Share Tech Mono', monospace" }}>
                   {scans.filter(s => s.status === 'running').length}
                 </Typography>
               </CardContent>
@@ -376,32 +368,14 @@ export const ScansPage: React.FC = () => {
           </Grid>
         </Grid>
 
-        {/* Tabs */}
-        <Paper sx={{ mb: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
-          <Tabs
-            value={tabValue}
-            onChange={(e, val) => setTabValue(val)}
-            sx={{
-              '& .MuiTab-root': { color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' },
-              '& .Mui-selected': { color: isDarkMode ? '#00d9ff' : '#0284c7' },
-              '& .MuiTabs-indicator': { bgcolor: isDarkMode ? '#00d9ff' : '#0284c7' },
-            }}
-          >
-            <Tab label={`All (${scans.length})`} />
-            <Tab label={`Completed (${scans.filter((s) => s.status === 'completed').length})`} />
-            <Tab label={`Running (${scans.filter((s) => s.status === 'running').length})`} />
-            <Tab label={`Failed (${scans.filter((s) => s.status === 'failed').length})`} />
-          </Tabs>
-        </Paper>
-
-        {/* Search Input */}
-        <Paper sx={{ p: 2, mb: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0' }}>
+        {/* Search & Filter */}
+        <Paper sx={{ p: 2, mb: 3, bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2 }}>
           <TextField
             fullWidth
             placeholder="Search target host or IP..."
             size="small"
             InputProps={{
-              startAdornment: <Search sx={{ mr: 1, color: isDarkMode ? '#8b949e' : '#64748b' }} />,
+              startAdornment: <Search sx={{ mr: 1, color: isDarkMode ? '#8b949e' : '#475569' }} />,
             }}
             value={filters.searchTerm}
             onChange={(e) => {
@@ -418,30 +392,40 @@ export const ScansPage: React.FC = () => {
         </Paper>
 
         {/* Table */}
-        <TableContainer component={Paper} sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', mb: 2, overflowX: 'auto' }}>
+        <TableContainer component={Paper} sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', border: isDarkMode ? '1px solid #30363d' : '1px solid #cbd5e1', borderRadius: 2, mb: 2, overflowX: 'auto' }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: isDarkMode ? '#0d1117' : '#f8fafc' }}>
-                <TableCell sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Target Host</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>IP</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Status</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Open Ports</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Duration</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Created</TableCell>
-                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold' }}>Actions</TableCell>
+              <TableRow sx={{ bgcolor: isDarkMode ? '#0d1117' : '#e2e8f0' }}>
+                <TableCell sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Target Host</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>IP</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Open Ports</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Duration</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Created</TableCell>
+                <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedScans.map((scan) => (
-                <TableRow key={scan.id} sx={{ borderBottom: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0', '&:hover': { bgcolor: isDarkMode ? '#0d1117' : '#f1f5f9' } }}>
+                <TableRow
+                  key={scan.id}
+                  sx={{
+                    borderBottom: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: isDarkMode ? 'rgba(0, 217, 255, 0.08)' : 'rgba(2, 132, 199, 0.08)',
+                      cursor: 'pointer',
+                    },
+                  }}
+                >
                   <TableCell sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a', fontWeight: 'bold' }}>{scan.target_host}</TableCell>
-                  <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontSize: '0.9rem' }}>{scan.target_ip}</TableCell>
+                  <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontSize: '0.9rem' }}>{scan.target_ip}</TableCell>
                   <TableCell align="center">
                     <Chip label={scan.status} size="small" variant="outlined" color={getStatusColor(scan.status) as any} />
                   </TableCell>
                   <TableCell align="center" sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a', fontWeight: 'bold' }}>{scan.open_ports_count}</TableCell>
                   <TableCell align="center" sx={{ color: isDarkMode ? '#c9d1d9' : '#0f172a' }}>{scan.duration_seconds ? scan.duration_seconds.toFixed(2) : '-'}s</TableCell>
-                  <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontSize: '0.9rem' }}>{new Date(scan.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell align="center" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontSize: '0.9rem' }}>{new Date(scan.created_at).toLocaleDateString()}</TableCell>
                   <TableCell align="center">
                     <IconButton size="small" onClick={() => handleViewDetails(scan)} title="View details" sx={{ color: isDarkMode ? '#00d9ff' : '#0284c7' }}>
                       <Visibility fontSize="small" />
@@ -468,9 +452,12 @@ export const ScansPage: React.FC = () => {
           count={filteredScans.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', color: isDarkMode ? '#c9d1d9' : '#0f172a' }}
+          onPageChange={(e, p) => setPage(p)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10))
+            setPage(0)
+          }}
+          sx={{ bgcolor: isDarkMode ? '#161b22' : '#ffffff', color: isDarkMode ? '#c9d1d9' : '#0f172a', borderRadius: 2 }}
         />
 
         {/* Create Scan Dialog */}
@@ -539,19 +526,19 @@ export const ScansPage: React.FC = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Target</Typography>
+                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'}>Target</Typography>
                     <Typography fontWeight="bold">{selectedScan.target_host}</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>IP Address</Typography>
+                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'}>IP Address</Typography>
                     <Typography fontWeight="bold">{selectedScan.target_ip}</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Open Ports</Typography>
+                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'}>Open Ports</Typography>
                     <Typography fontWeight="bold" color="#16a34a">{selectedScan.open_ports_count}</Typography>
                   </Grid>
                   <Grid item xs={6} sm={3}>
-                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#64748b'}>Duration</Typography>
+                    <Typography variant="caption" color={isDarkMode ? '#8b949e' : '#475569'}>Duration</Typography>
                     <Typography fontWeight="bold">{selectedScan.duration_seconds ? selectedScan.duration_seconds.toFixed(2) : '-'}s</Typography>
                   </Grid>
                 </Grid>

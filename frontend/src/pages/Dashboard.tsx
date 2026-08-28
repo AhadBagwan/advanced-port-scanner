@@ -103,52 +103,56 @@ export const Dashboard: React.FC = () => {
         value: stats.totalScans,
         icon: <Activity />,
         color: isDarkMode ? '#00d9ff' : '#0284c7',
-        border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #bae6fd',
-        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+        border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #cbd5e1',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.85)' : '#ffffff',
       },
       {
         label: 'Completed Jobs',
         value: stats.completedScans,
         icon: <Shield />,
         color: isDarkMode ? '#00ff88' : '#16a34a',
-        border: isDarkMode ? '1px solid rgba(0, 255, 136, 0.3)' : '1px solid #bbf7d0',
-        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+        border: isDarkMode ? '1px solid rgba(0, 255, 136, 0.3)' : '1px solid #cbd5e1',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.85)' : '#ffffff',
       },
       {
         label: 'Open Ports Detected',
         value: stats.totalOpenPorts,
         icon: <Radar />,
         color: isDarkMode ? '#ff4d4d' : '#dc2626',
-        border: isDarkMode ? '1px solid rgba(255, 77, 77, 0.3)' : '1px solid #fecaca',
-        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+        border: isDarkMode ? '1px solid rgba(255, 77, 77, 0.3)' : '1px solid #cbd5e1',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.85)' : '#ffffff',
       },
       {
         label: 'Avg Duration',
         value: `${stats.avgScanDuration}s`,
         icon: <Zap />,
         color: isDarkMode ? '#ffb020' : '#d97706',
-        border: isDarkMode ? '1px solid rgba(255, 176, 32, 0.3)' : '1px solid #fef08a',
-        bg: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
+        border: isDarkMode ? '1px solid rgba(255, 176, 32, 0.3)' : '1px solid #cbd5e1',
+        bg: isDarkMode ? 'rgba(22, 27, 34, 0.85)' : '#ffffff',
       },
     ],
     [stats, isDarkMode]
   )
 
   return (
-    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#f8fafc', color: isDarkMode ? '#e6edf3' : '#0f172a' }}>
+    <Box sx={{ py: 4, minHeight: '100vh', bgcolor: isDarkMode ? '#05070a' : '#e2e8f0', color: isDarkMode ? '#e6edf3' : '#0f172a', transition: 'background-color 0.3s ease' }}>
       <Container maxWidth="lg">
-        {/* Hero Cyber Banner with Logo */}
+        {/* Hero Banner with Logo & Subtitle */}
         <Paper
           sx={{
             p: { xs: 2.5, md: 4 },
             mb: 4,
-            bgcolor: isDarkMode ? 'rgba(18, 22, 29, 0.7)' : '#ffffff',
+            bgcolor: isDarkMode ? 'rgba(18, 22, 29, 0.85)' : '#ffffff',
             backdropFilter: 'blur(12px)',
-            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #e2e8f0',
-            boxShadow: isDarkMode ? '0 0 30px rgba(0, 217, 255, 0.15)' : '0 4px 20px rgba(0, 0, 0, 0.05)',
+            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.3)' : '1px solid #cbd5e1',
+            boxShadow: isDarkMode ? '0 0 30px rgba(0, 217, 255, 0.15)' : '0 10px 30px rgba(0, 0, 0, 0.06)',
             borderRadius: 3,
             position: 'relative',
             overflow: 'hidden',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              boxShadow: isDarkMode ? '0 0 40px rgba(0, 217, 255, 0.25)' : '0 15px 35px rgba(0, 0, 0, 0.1)',
+            },
           }}
         >
           <Grid container spacing={3} alignItems="center">
@@ -159,11 +163,15 @@ export const Dashboard: React.FC = () => {
                   src="/logo.jpg"
                   alt="Cyber Radar Logo"
                   sx={{
-                    width: { xs: 50, sm: 70 },
-                    height: { xs: 50, sm: 70 },
+                    width: { xs: 55, sm: 70 },
+                    height: { xs: 55, sm: 70 },
                     borderRadius: '50%',
-                    border: '2px solid #00d9ff',
+                    border: '3px solid #00d9ff',
                     boxShadow: '0 0 25px rgba(0, 217, 255, 0.8)',
+                    transition: 'transform 0.4s ease',
+                    '&:hover': {
+                      transform: 'scale(1.1) rotate(10deg)',
+                    },
                   }}
                 />
                 <Box>
@@ -176,13 +184,25 @@ export const Dashboard: React.FC = () => {
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       letterSpacing: '1px',
-                      fontSize: { xs: '1.4rem', sm: '2rem' },
+                      fontSize: { xs: '1.5rem', sm: '2rem' },
                     }}
                   >
-                    CYBER RADAR RECON SYSTEM
+                    CYBER RADAR
                   </Typography>
-                  <Typography variant="body2" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontFamily: 'monospace', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
-                    REAL-TIME THREAT INTELLIGENCE & PORT RECONNAISSANCE PLATFORM
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      color: isDarkMode ? '#00d9ff' : '#0284c7',
+                      fontWeight: 'bold',
+                      fontFamily: 'monospace',
+                      letterSpacing: '2px',
+                      fontSize: { xs: '0.85rem', sm: '1rem' },
+                    }}
+                  >
+                    ADVANCED PORT SCANNER SYSTEM
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontSize: '0.85rem', mt: 0.5 }}>
+                    Real-Time Network Reconnaissance & Threat Intelligence Engine
                   </Typography>
                 </Box>
               </Box>
@@ -201,9 +221,13 @@ export const Dashboard: React.FC = () => {
                   py: 1.2,
                   px: 3,
                   fontSize: '0.95rem',
+                  borderRadius: 2,
                   boxShadow: '0 0 20px rgba(0, 217, 255, 0.4)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
                     background: 'linear-gradient(135deg, #00ff88 0%, #00d9ff 100%)',
+                    transform: 'translateY(-3px) scale(1.02)',
+                    boxShadow: '0 8px 25px rgba(0, 255, 136, 0.5)',
                   },
                 }}
               >
@@ -213,7 +237,7 @@ export const Dashboard: React.FC = () => {
           </Grid>
         </Paper>
 
-        {/* Stats Grid */}
+        {/* Stats Grid with Hover Cards */}
         <Grid container spacing={2.5} sx={{ mb: 4 }}>
           {statsCards.map((stat) => (
             <Grid item xs={12} sm={6} md={3} key={stat.label}>
@@ -221,17 +245,19 @@ export const Dashboard: React.FC = () => {
                 sx={{
                   bgcolor: stat.bg,
                   border: stat.border,
-                  boxShadow: isDarkMode ? `0 0 15px ${stat.color}15` : '0 2px 10px rgba(0, 0, 0, 0.04)',
-                  transition: 'all 0.3s ease',
+                  borderRadius: 2.5,
+                  boxShadow: isDarkMode ? `0 0 15px ${stat.color}15` : '0 4px 15px rgba(0, 0, 0, 0.05)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: isDarkMode ? `0 0 25px ${stat.color}40` : '0 6px 16px rgba(0, 0, 0, 0.08)',
+                    transform: 'translateY(-6px) scale(1.02)',
+                    boxShadow: isDarkMode ? `0 10px 30px ${stat.color}40` : '0 10px 25px rgba(0, 0, 0, 0.12)',
+                    borderColor: stat.color,
                   },
                 }}
               >
                 <CardContent sx={{ p: 2.5 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Typography variant="caption" sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold', letterSpacing: '1px', fontFamily: 'monospace' }}>
+                    <Typography variant="caption" sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontWeight: 'bold', letterSpacing: '1px', fontFamily: 'monospace' }}>
                       {stat.label.toUpperCase()}
                     </Typography>
                     <Box sx={{ color: stat.color }}>{stat.icon}</Box>
@@ -249,22 +275,53 @@ export const Dashboard: React.FC = () => {
         <Paper
           sx={{
             p: { xs: 2, sm: 3 },
-            bgcolor: isDarkMode ? 'rgba(22, 27, 34, 0.8)' : '#ffffff',
-            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.2)' : '1px solid #e2e8f0',
-            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 4px 16px rgba(0, 0, 0, 0.05)',
-            borderRadius: 2,
+            bgcolor: isDarkMode ? 'rgba(22, 27, 34, 0.85)' : '#ffffff',
+            border: isDarkMode ? '1px solid rgba(0, 217, 255, 0.2)' : '1px solid #cbd5e1',
+            boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.4)' : '0 8px 25px rgba(0, 0, 0, 0.06)',
+            borderRadius: 2.5,
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5, flexWrap: 'wrap', gap: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7', letterSpacing: '1px' }}>
-              📡 RECENT RECON SCANS
-            </Typography>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: "'Share Tech Mono', monospace", color: isDarkMode ? '#00d9ff' : '#0284c7', letterSpacing: '1px' }}>
+                📡 RECENT RECON SCANS
+              </Typography>
+            </Box>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button size="small" variant="outlined" startIcon={<Refresh />} onClick={fetchDashboard} sx={{ color: isDarkMode ? '#8b949e' : '#475569', borderColor: isDarkMode ? '#30363d' : '#cbd5e1' }}>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<Refresh />}
+                onClick={fetchDashboard}
+                sx={{
+                  color: isDarkMode ? '#8b949e' : '#475569',
+                  borderColor: isDarkMode ? '#30363d' : '#cbd5e1',
+                  transition: 'all 0.25s ease',
+                  '&:hover': {
+                    bgcolor: isDarkMode ? '#21262d' : '#f1f5f9',
+                    transform: 'rotate(180deg)',
+                  },
+                }}
+              >
                 Refresh
               </Button>
-              <Button size="small" variant="contained" endIcon={<ArrowForward />} onClick={() => navigate('/scans')} sx={{ bgcolor: isDarkMode ? '#161b22' : '#0284c7', color: '#ffffff', '&:hover': { bgcolor: isDarkMode ? '#21262d' : '#0369a1' } }}>
-                View All
+              <Button
+                size="small"
+                variant="contained"
+                endIcon={<ArrowForward />}
+                onClick={() => navigate('/scans')}
+                sx={{
+                  bgcolor: isDarkMode ? '#161b22' : '#0284c7',
+                  color: '#ffffff',
+                  fontWeight: 'bold',
+                  transition: 'all 0.25s ease',
+                  '&:hover': {
+                    bgcolor: isDarkMode ? '#21262d' : '#0369a1',
+                    transform: 'translateX(3px)',
+                  },
+                }}
+              >
+                View All Scans
               </Button>
             </Box>
           </Box>
@@ -277,7 +334,7 @@ export const Dashboard: React.FC = () => {
             <TableContainer sx={{ overflowX: 'auto' }}>
               <Table size="small">
                 <TableHead>
-                  <TableRow sx={{ '& th': { bgcolor: isDarkMode ? '#0d1117' : '#f8fafc', color: isDarkMode ? '#8b949e' : '#64748b', fontWeight: 'bold', fontFamily: 'monospace' } }}>
+                  <TableRow sx={{ '& th': { bgcolor: isDarkMode ? '#0d1117' : '#e2e8f0', color: isDarkMode ? '#8b949e' : '#0f172a', fontWeight: 'bold', fontFamily: 'monospace' } }}>
                     <TableCell>TARGET HOST</TableCell>
                     <TableCell>PORT SCOPE</TableCell>
                     <TableCell>STATUS</TableCell>
@@ -288,13 +345,23 @@ export const Dashboard: React.FC = () => {
                 <TableBody>
                   {recentScans.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} sx={{ textAlign: 'center', color: isDarkMode ? '#8b949e' : '#64748b', py: 3 }}>
+                      <TableCell colSpan={5} sx={{ textAlign: 'center', color: isDarkMode ? '#8b949e' : '#475569', py: 3 }}>
                         No scan history found. Launch your first scan above!
                       </TableCell>
                     </TableRow>
                   ) : (
                     recentScans.map((scan) => (
-                      <TableRow key={scan.id} hover sx={{ '& td': { color: isDarkMode ? '#c9d1d9' : '#1e293b', borderColor: isDarkMode ? '#30363d' : '#e2e8f0' }, '&:hover': { bgcolor: isDarkMode ? '#0d1117' : '#f1f5f9' } }}>
+                      <TableRow
+                        key={scan.id}
+                        sx={{
+                          borderBottom: isDarkMode ? '1px solid #30363d' : '1px solid #e2e8f0',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: isDarkMode ? 'rgba(0, 217, 255, 0.08)' : 'rgba(2, 132, 199, 0.08)',
+                            cursor: 'pointer',
+                          },
+                        }}
+                      >
                         <TableCell sx={{ fontFamily: 'monospace', fontWeight: 'bold', color: isDarkMode ? '#00d9ff' : '#0284c7' }}>{scan.target_host}</TableCell>
                         <TableCell sx={{ fontFamily: 'monospace' }}>
                           {scan.port_range_start}-{scan.port_range_end}
@@ -302,10 +369,10 @@ export const Dashboard: React.FC = () => {
                         <TableCell>
                           <Chip size="small" label={scan.status.toUpperCase()} color={statusColor(scan.status) as any} variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem' }} />
                         </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', color: scan.open_ports_count > 0 ? (isDarkMode ? '#00ff88' : '#16a34a') : (isDarkMode ? '#8b949e' : '#64748b') }}>
+                        <TableCell sx={{ fontWeight: 'bold', color: scan.open_ports_count > 0 ? (isDarkMode ? '#00ff88' : '#16a34a') : (isDarkMode ? '#8b949e' : '#475569') }}>
                           {scan.open_ports_count} ports
                         </TableCell>
-                        <TableCell sx={{ color: isDarkMode ? '#8b949e' : '#64748b', fontSize: '0.85rem' }}>{new Date(scan.created_at).toLocaleString()}</TableCell>
+                        <TableCell sx={{ color: isDarkMode ? '#8b949e' : '#475569', fontSize: '0.85rem' }}>{new Date(scan.created_at).toLocaleString()}</TableCell>
                       </TableRow>
                     ))
                   )}
