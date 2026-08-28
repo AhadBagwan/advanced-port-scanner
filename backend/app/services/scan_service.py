@@ -112,14 +112,16 @@ class ScanService:
     @staticmethod
     def start_scan(db: Session, scan: Scan, target_ip: str) -> Scan:
         """Start port scanning"""
+        from datetime import timezone
         scan.target_ip = target_ip
         scan.status = "running"
-        scan.start_time = datetime.utcnow()
+        scan.start_time = datetime.now(timezone.utc)
         db.commit()
 
         try:
             scanner = get_scanner(scan.timeout_seconds, scan.workers_count)
             from app.core.scanner import PRESET_PROFILES
+            from datetime import timezone
 
             preset_ports = None
             if scan.notes and "preset:" in scan.notes:
@@ -151,16 +153,25 @@ class ScanService:
                 )
                 db.add(result)
 
+            now = datetime.now(timezone.utc)
             scan.open_ports_count = len(open_ports)
             scan.status = "completed"
-            scan.end_time = datetime.utcnow()
-            scan.duration_seconds = (scan.end_time - scan.start_time).total_seconds()
+            scan.end_time = now
+
+            start_time = scan.start_time
+            if start_time:
+                if start_time.tzinfo is None:
+                    start_time = start_time.replace(tzinfo=timezone.utc)
+                scan.duration_seconds = round((now - start_time).total_seconds(), 2)
+            else:
+                scan.duration_seconds = 0.0
+
             db.commit()
             db.refresh(scan)
 
         except Exception as e:
             scan.status = "failed"
-            scan.end_time = datetime.utcnow()
+            scan.end_time = datetime.now(timezone.utc)
             db.commit()
             raise
 

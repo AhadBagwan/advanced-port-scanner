@@ -126,6 +126,68 @@ async def list_scans(
         raise HTTPException(status_code=500, detail="Failed to retrieve scans")
 
 
+@router.get("/compare", response_model=dict)
+async def compare_scans(
+    scan_id1: int = Query(..., description="First scan ID"),
+    scan_id2: int = Query(..., description="Second scan ID"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Compare two scan results and return detailed diff"""
+    try:
+        scan1 = ScanService.get_scan(db, scan_id1, current_user)
+        scan2 = ScanService.get_scan(db, scan_id2, current_user)
+
+        results1, _ = ScanService.get_scan_results(db, scan1, limit=10000)
+        results2, _ = ScanService.get_scan_results(db, scan2, limit=10000)
+
+        ports1 = {r.port: r for r in results1}
+        ports2 = {r.port: r for r in results2}
+
+        all_ports = sorted(list(set(ports1.keys()) | set(ports2.keys())))
+
+        added_ports = [p for p in all_ports if p not in ports1 and p in ports2]
+        removed_ports = [p for p in all_ports if p in ports1 and p not in ports2]
+        common_ports = [p for p in all_ports if p in ports1 and p in ports2]
+
+        details = []
+        for p in all_ports:
+            s1 = ports1.get(p)
+            s2 = ports2.get(p)
+            change_type = "unchanged"
+            if p in added_ports:
+                change_type = "added"
+            elif p in removed_ports:
+                change_type = "removed"
+            elif s1 and s2 and s1.service_name != s2.service_name:
+                change_type = "modified"
+
+            details.append({
+                "port": p,
+                "service_name": (s2 or s1).service_name if (s2 or s1) else None,
+                "status_scan1": "open" if s1 else "closed",
+                "status_scan2": "open" if s2 else "closed",
+                "change_type": change_type,
+            })
+
+        return {
+            "status": "success",
+            "data": {
+                "scan1": ScanResponse.from_orm(scan1),
+                "scan2": ScanResponse.from_orm(scan2),
+                "added_ports": added_ports,
+                "removed_ports": removed_ports,
+                "common_ports": common_ports,
+                "details": details,
+            }
+        }
+    except AppException as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message)
+    except Exception as exc:
+        logger.error(f"Error comparing scans {scan_id1} and {scan_id2}: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Failed to compare scans")
+
+
 @router.get("/{scan_id}", response_model=dict)
 async def get_scan(
     scan_id: int,
@@ -269,66 +331,7 @@ async def delete_scan(
         raise HTTPException(status_code=500, detail="Failed to delete scan")
 
 
-@router.get("/compare", response_model=dict)
-async def compare_scans(
-    scan_id1: int = Query(..., description="First scan ID"),
-    scan_id2: int = Query(..., description="Second scan ID"),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    """Compare two scan results and return detailed diff"""
-    try:
-        scan1 = ScanService.get_scan(db, scan_id1, current_user)
-        scan2 = ScanService.get_scan(db, scan_id2, current_user)
 
-        results1, _ = ScanService.get_scan_results(db, scan1, limit=10000)
-        results2, _ = ScanService.get_scan_results(db, scan2, limit=10000)
-
-        ports1 = {r.port: r for r in results1}
-        ports2 = {r.port: r for r in results2}
-
-        all_ports = sorted(list(set(ports1.keys()) | set(ports2.keys())))
-
-        added_ports = [p for p in all_ports if p not in ports1 and p in ports2]
-        removed_ports = [p for p in all_ports if p in ports1 and p not in ports2]
-        common_ports = [p for p in all_ports if p in ports1 and p in ports2]
-
-        details = []
-        for p in all_ports:
-            s1 = ports1.get(p)
-            s2 = ports2.get(p)
-            change_type = "unchanged"
-            if p in added_ports:
-                change_type = "added"
-            elif p in removed_ports:
-                change_type = "removed"
-            elif s1 and s2 and s1.service_name != s2.service_name:
-                change_type = "modified"
-
-            details.append({
-                "port": p,
-                "service_name": (s2 or s1).service_name if (s2 or s1) else None,
-                "status_scan1": "open" if s1 else "closed",
-                "status_scan2": "open" if s2 else "closed",
-                "change_type": change_type,
-            })
-
-        return {
-            "status": "success",
-            "data": {
-                "scan1": ScanResponse.from_orm(scan1),
-                "scan2": ScanResponse.from_orm(scan2),
-                "added_ports": added_ports,
-                "removed_ports": removed_ports,
-                "common_ports": common_ports,
-                "details": details,
-            }
-        }
-    except AppException as exc:
-        raise HTTPException(status_code=exc.status_code, detail=exc.message)
-    except Exception as exc:
-        logger.error(f"Error comparing scans {scan_id1} and {scan_id2}: {str(exc)}")
-        raise HTTPException(status_code=500, detail="Failed to compare scans")
 
 
 @router.post("/{scan_id}/export", response_model=dict)
